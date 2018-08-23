@@ -27,7 +27,7 @@
 # define MPACK_API static
 # include "../build/mpack.c"
 #else
-# include "../build/mpack.h"
+# include "../src/mpack.h"
 #endif
 
 static char buf[0xffffff];
