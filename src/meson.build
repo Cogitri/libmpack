@@ -1,67 +1,62 @@
-mpack_h_in = custom_target(
-  'mpack.h.in',
-  input : [
+headers = [
 	'conv.h',
-	'core.c',
+	'core.h',
 	'object.h',
 	'rpc.h',
-  ],
-  output : 'mpack.h.in',
-  command : [
-	'cat',
-	'@INPUT@',
-  ],
-  capture : true,
-)
+]
 
-mpack_h = custom_target(
-  'mpack.h',
-  input : mpack_h_in,
-  command : [
-	'sed',
-	'/^#include "/d',
-	'@INPUT@',
-  ],
-  output : 'mpack.h',
-  capture : true,
-  install : true,
-  install_dir : get_option('includedir'),
-)
-
-
-mpack_c_in = custom_target('mpack_c_in',
-  input : [
+c_source=[
 	'conv.c',
 	'core.c',
-	'mpack.c',
 	'object.c',
-	'rpc.c',
-	mpack_h,
-  ],
-  output : 'mpack.c.in',
-  command : [
-	'cat',
-	'@INPUT@',
-  ],
-  capture : true,
+	'rpc.c'
+]
+
+# Combine all headers into mpack.h
+concated_h = custom_target(
+	'concated.h',
+	input: headers,
+	output: 'concated.h',
+	command: [
+		'cat',
+		'@INPUT@',
+	],
+	capture: true,
 )
 
-mpack_c = custom_target('mpack_c',
+# Remove all includes from mpack.h
+mpack_h = custom_target(
+	'mpack.h',
+	input: concated_h,
+	output: 'mpack.h',
+	install: true,
+	install_dir: get_option('includedir'),
+	command: [
+		'sed',
+		'/#include/d',
+		'@INPUT@',
+	],
+	capture: true,
+)
+
+# Merge all c files and mpack.h into mpack.c
+mpack_c = custom_target(
+	'mpack_c',
   input : [
-	mpack_c_in,
+	c_source,
+	mpack_h,
   ],
   output : 'mpack.c',
   command : [
-	'sed',
-	'/^#include "/d',
-	'@INPUT@',
+		'cat',
+		'@INPUT@',
   ],
-  capture : true,
+	capture: true,
 )
 
 libmpack = both_libraries(
   'mpack',
-  'mpack.c',
+  mpack_c,
   version : '1.0.0',
   include_directories : inc,
   install : true,
