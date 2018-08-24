@@ -1,12 +1,17 @@
-project('libmapck', 'c',
+project(
+  'libmapck',
+  'c',
   version : '1.0.5',
   license : 'MIT',
 )
 
-inc = include_directories('src')
+inc = include_directories(
+  '.',
+  'src',
+)
 
 subdir('src')
-#subdir('test')
+subdir('test')
 
 import('pkgconfig').generate(
   libraries : libmpack,

@@ -1,6 +1,6 @@
 headers = [
-	'conv.h',
 	'core.h',
+	'conv.h',
 	'object.h',
 	'rpc.h',
 ]
@@ -33,7 +33,7 @@ mpack_h = custom_target(
 	install_dir: get_option('includedir'),
 	command: [
 		'sed',
-		'/#include/d',
+		'/#include "/d',
 		'@INPUT@',
 	],
 	capture: true,
@@ -60,4 +60,10 @@ libmpack = both_libraries(
   version : '1.0.0',
   include_directories : inc,
   install : true,
+)
+
+libmpack_dep = declare_dependency(
+	link_with: libmpack,
+	include_directories: include_directories('.'),
+	sources: mpack_h,
 )
